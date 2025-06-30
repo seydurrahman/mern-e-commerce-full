@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@radix-ui/react-label";
 import axios from "axios";
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
@@ -9,6 +10,7 @@ function ProductImageUpload({
   imageFile,
   setImageFile,
   uploadedImageUrl,
+  imageLoadingState,
   setUploadedImageUrl,
   setImageLoadingState,
 }) {
@@ -49,7 +51,7 @@ function ProductImageUpload({
       console.log("Cloudinary response", response.data);
       if (response.data.success) {
         setUploadedImageUrl(response.data.result.secure_url);
-        setImageLoadingState(false)
+        setImageLoadingState(false);
       } else {
         console.error("Upload failed:", response.data.message);
       }
@@ -84,6 +86,8 @@ function ProductImageUpload({
             <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
             <span>Drag & Drop Or Click to upload image</span>
           </Label>
+        ) : imageLoadingState ? (
+          <Skeleton className="h-10 bg-gray-100" />
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center">
