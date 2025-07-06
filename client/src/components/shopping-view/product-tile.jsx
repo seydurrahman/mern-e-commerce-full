@@ -46,7 +46,7 @@ const ShoppingProductTile = ({ product, handleGetProductDetails }) => {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full">Add to Cart</Button>
+          <Button className="w-full">Add to cart</Button>
         </CardFooter>
       </div>
     </Card>
