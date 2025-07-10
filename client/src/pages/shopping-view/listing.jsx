@@ -18,6 +18,8 @@ import {
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
+import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { toast } from "sonner";
 
 const ShoppingListing = () => {
   // fetch list of products
@@ -26,10 +28,10 @@ const ShoppingListing = () => {
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
+  const { user } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   function createSearchParamsHelper(filterParams) {
@@ -75,6 +77,25 @@ const ShoppingListing = () => {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
+  function handleAddtoCart(getCurrentProductId) {
+    console.log(getCurrentProductId);
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      console.log("Add to Cart Response:", data); // check what you get
+      if (data?.payload?.success) {
+        dispatch(fetchCartItems(user?.id));
+        toast.success("Product added to cart");
+      } else {
+        toast.error("Failed to add product to cart");
+      }
+    });
+  }
+
   useEffect(() => {
     setSort("price-lowtohigh");
     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
@@ -98,8 +119,7 @@ const ShoppingListing = () => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
-  console.log(productDetails, "productDetails");
-
+  
   return (
     <div className="grid w-full grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
       <ProductFilter filters={filters} handleFilter={handleFilter} />
@@ -142,6 +162,7 @@ const ShoppingListing = () => {
                 <ShoppingProductTile
                   handleGetProductDetails={handleGetProductDetails}
                   product={productItem}
+                  handleAddtoCart={handleAddtoCart}
                 />
               ))
             : null}

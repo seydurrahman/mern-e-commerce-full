@@ -26,7 +26,7 @@ export const fetchCartItems = createAsyncThunk(
   "add/fetchCartItems",
   async (userId) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/cart/get${userId}`
+      `http://localhost:5000/api/shop/cart/get/${userId}`
     );
     return response.data;
   }
@@ -58,7 +58,7 @@ export const updateCartQuantity = createAsyncThunk(
 );
 
 const shoppingCartSlice = createSlice({
-  name: "shoppingcart",
+  name: "shopCart",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
