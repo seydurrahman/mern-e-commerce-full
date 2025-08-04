@@ -82,7 +82,6 @@ const ShoppingHome = () => {
   }
 
   function handleAddtoCart(getCurrentProductId) {
-    console.log(getCurrentProductId);
     dispatch(
       addToCart({
         userId: user?.id,
@@ -90,7 +89,6 @@ const ShoppingHome = () => {
         quantity: 1,
       })
     ).then((data) => {
-      console.log("Add to Cart Response:", data); // check what you get
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
         toast.success("Product added to cart");

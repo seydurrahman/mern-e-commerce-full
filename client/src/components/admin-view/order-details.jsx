@@ -16,11 +16,12 @@ const initialFormData = {
   status: "",
 };
 
-const AdminOrderDetailsView = ({ orderDetails }) => {
+function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
+  console.log(orderDetails,"orderDetails");
 
   function handleUpdateStatus(event) {
     event.preventDefault();
@@ -36,7 +37,7 @@ const AdminOrderDetailsView = ({ orderDetails }) => {
         dispatch(getOrderDetailsForAdmin(orderDetails?._id));
         dispatch(getAllOrdersForAdmin());
         setFormData(initialFormData);
-        toast.success("Order updated")
+        toast.success("Order updated");
       }
     });
   }
@@ -139,6 +140,6 @@ const AdminOrderDetailsView = ({ orderDetails }) => {
       </div>
     </DialogContent>
   );
-};
+}
 
 export default AdminOrderDetailsView;
