@@ -1,3 +1,7 @@
+import { Button } from "@/components/ui/button";
+import BannerImage1 from "../../assets/Banner-1.png";
+import BannerImage2 from "../../assets/Banner-2.jpg";
+import BannerImage3 from "../../assets/Banner-3.png";
 import {
   Airplay,
   BabyIcon,
@@ -13,12 +17,6 @@ import {
   WashingMachine,
   WatchIcon,
 } from "lucide-react";
-import BannerImage1 from "../../assets/Banner-1.png";
-import BannerImage2 from "../../assets/Banner-2.jpg";
-import BannerImage3 from "../../assets/Banner-3.png";
-import BannerImage4 from "../../assets/Banner-4.jpg";
-import BannerImage5 from "../../assets/Banner-5.jpg";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { toast } from "sonner";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
+import { getFeatureImages } from "@/store/common-slice";
 
 const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
@@ -54,18 +53,14 @@ const ShoppingHome = () => {
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
+  const { featureImageList } = useSelector((state) => state.commonFeature);
+
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+
   const { user } = useSelector((state) => state.auth);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const slides = [
-    BannerImage1,
-    BannerImage2,
-    BannerImage3,
-    BannerImage4,
-    BannerImage5,
-  ];
 
   function handleNavigateToListingPage(getCurrentItem, section) {
     sessionStorage.removeItem("filters");
@@ -103,11 +98,13 @@ const ShoppingHome = () => {
   }, [productDetails]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, []);
+    if (featureImageList && featureImageList.length > 0) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
+      }, 3000);
+      return () => clearInterval(timer);
+    }
+  }, [featureImageList]);
 
   useEffect(() => {
     dispatch(
@@ -117,43 +114,61 @@ const ShoppingHome = () => {
       })
     );
   }, [dispatch]);
-  console.log(productList, "productList");
+
+  console.log(featureImageList, "productList");
+
+  useEffect(() => {
+    dispatch(getFeatureImages());
+  }, [dispatch]);
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-white">
-      <div className=" relative w-full h-[600px] overflow-hidden">
-        {slides.map((slide, index) => (
-          <img
-            src={slide}
-            key={index}
-            className={` absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>
-            setCurrentSlide(
-              (prevSlide) => (prevSlide - 1 + slides.length) % slides.length
-            )
-          }
-          className=" absolute top-1/2 left-4 transform -translate-y-1/2 bg-purple-400"
-        >
-          <ChevronLeftIcon className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>
-            setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
-          }
-          className=" absolute top-1/2 right-4 transform -translate-y-1/2 bg-purple-400"
-        >
-          <ChevronRightIcon className="w-4 h-4" />
-        </Button>
+      <div className="relative w-full h-[600px] overflow-hidden">
+        {featureImageList && featureImageList.length > 0
+          ? featureImageList.map((slide, index) => (
+              <img
+                src={slide?.image}
+                key={index}
+                alt={`Banner ${index + 1}`}
+                className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                  index === currentSlide ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            ))
+          : null}
+        
+        {featureImageList && featureImageList.length > 1 && (
+          <>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                setCurrentSlide(
+                  (prevSlide) =>
+                    (prevSlide - 1 + featureImageList.length) %
+                    featureImageList.length
+                )
+              }
+              className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-purple-400"
+            >
+              <ChevronLeftIcon className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                setCurrentSlide(
+                  (prevSlide) => (prevSlide + 1) % featureImageList.length
+                )
+              }
+              className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-purple-400"
+            >
+              <ChevronRightIcon className="w-4 h-4" />
+            </Button>
+          </>
+        )}
       </div>
+
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">
@@ -177,6 +192,7 @@ const ShoppingHome = () => {
           </div>
         </div>
       </section>
+
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">Shop by brand</h2>
@@ -196,6 +212,7 @@ const ShoppingHome = () => {
           </div>
         </div>
       </section>
+
       <section className="py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">
@@ -205,6 +222,7 @@ const ShoppingHome = () => {
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                   <ShoppingProductTile
+                    key={productItem.id}
                     handleGetProductDetails={handleGetProductDetails}
                     product={productItem}
                     handleAddtoCart={handleAddtoCart}
@@ -214,6 +232,7 @@ const ShoppingHome = () => {
           </div>
         </div>
       </section>
+      
       <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}

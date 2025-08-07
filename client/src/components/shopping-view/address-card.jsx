@@ -16,6 +16,7 @@ const AddressCard = ({
           ? () => setCurrentSelectedAddress(addressInfo)
           : null
       }
+      className="cursor-pointer hover:shadow-2xl border-red-800 transition-shadow duration-200"
     >
       <CardContent className="grid gap-4">
         <Label>Address : {addressInfo?.address}</Label>

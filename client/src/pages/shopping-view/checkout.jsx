@@ -114,7 +114,11 @@ const ShoppingCheckout = () => {
               onClick={() => handleInitiatePaypalPayment()}
               className="w-full"
             >
-              Checkout With Paypal
+              {
+                isPaymentStart
+                  ? "Redirecting to Paypal..."
+                  : "Pay with Paypal"
+              }
             </Button>
           </div>
         </div>

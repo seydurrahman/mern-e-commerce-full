@@ -6,6 +6,17 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
 
   console.log(location.pathname,isAuthenticated);
   
+  if(location.pathname === "/"){
+    if(!isAuthenticated) {
+      return <Navigate to="/auth/login" />;
+    } else{
+      if (user?.role === "admin") {
+      return <Navigate to="/admin/dashboard" />;
+    } else {
+      return <Navigate to="/shop/home" />;
+    }
+    }
+  }
 
   if (
     !isAuthenticated &&
