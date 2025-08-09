@@ -25,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
-import { logoutUser } from "@/store/auth-slice";
+import { logoutUser, resetTokenAndCredentials } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
@@ -78,7 +78,10 @@ function HeaderRightContent() {
   const dispatch = useDispatch();
 
   function handleLogout() {
-    dispatch(logoutUser());
+    // dispatch(logoutUser());
+    dispatch(resetTokenAndCredentials());
+    sessionStorage.clear();
+    navigate("/auth/login");
   }
 
   useEffect(() => {
@@ -95,7 +98,9 @@ function HeaderRightContent() {
           className="relative"
         >
           <ShoppingCart className="h-6 w-6" />
-            <span className=" absolute top-[-2px] right-[2px] font-bold text-sm">{cartItems?.items?.length || 0}</span>
+          <span className=" absolute top-[-2px] right-[2px] font-bold text-sm">
+            {cartItems?.items?.length || 0}
+          </span>
           <span className="sr-only">User Cart</span>
         </Button>
         <UserCartWrapper
