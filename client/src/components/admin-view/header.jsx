@@ -13,7 +13,7 @@ const AdminHeader = ({ setOpen }) => {
     // dispatch(logoutUser());
     dispatch(resetTokenAndCredentials());
     sessionStorage.clear();
-    navigate("/auth/logout");
+    navigate("/auth/login");
   }
 
   return (
