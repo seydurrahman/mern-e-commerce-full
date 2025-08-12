@@ -45,7 +45,9 @@ export const logoutUser = createAsyncThunk("/auth/logout", async () => {
   return response.data;
 });
 
-// export const checkAuth = createAsyncThunk("/auth/checkauth", async () => {
+// export const checkAuth = createAsyncThunk(
+// "/auth/checkauth",
+//  async () => {
 //   const response = await axios.get(
 //     `${import.meta.env.VITE_API_URL}/api/auth/check-auth`,
 //     {
@@ -59,7 +61,9 @@ export const logoutUser = createAsyncThunk("/auth/logout", async () => {
 //   return response.data;
 // });
 
-export const checkAuth = createAsyncThunk("/auth/checkauth", async (token) => {
+export const checkAuth = createAsyncThunk(
+  "/auth/checkauth", 
+  async (token) => {
   const response = await axios.get(
     `${import.meta.env.VITE_API_URL}/api/auth/check-auth`,
     {

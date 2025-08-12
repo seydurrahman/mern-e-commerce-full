@@ -30,7 +30,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = JSON.parse(sessionStorage.getItem("token"));
     dispatch(checkAuth(token));
   }, [dispatch]);
 
@@ -41,10 +41,15 @@ function App() {
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
-        <Route path="/" element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-            </CheckAuth>
-          }/>
+        <Route
+          path="/"
+          element={
+            <CheckAuth
+              isAuthenticated={isAuthenticated}
+              user={user}
+            ></CheckAuth>
+          }
+        />
         <Route
           path="/auth"
           element={
