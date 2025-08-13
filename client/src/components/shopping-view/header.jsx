@@ -95,10 +95,10 @@ function HeaderRightContent() {
           onClick={() => setOpenCartSheet(true)}
           variant="outline"
           size="icon"
-          className="relative"
+          className="relative rounded-full hover:bg-accent transition"
         >
           <ShoppingCart className="h-6 w-6" />
-          <span className=" absolute top-[-2px] right-[2px] font-bold text-sm">
+          <span className=" absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5">
             {cartItems?.items?.length || 0}
           </span>
           <span className="sr-only">User Cart</span>
@@ -116,10 +116,12 @@ function HeaderRightContent() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="bg-black">
-            <AvatarFallback className="bg-blue-800 text-orange-500 font-extrabold ">
-              {typeof user?.userName === "string" && user.userName.length > 0
-                ? user.userName[0].toUpperCase()
-                : "?"}
+            <AvatarFallback className="bg-blue-800 text-orange-500 font-extrabold">
+              {(() => {
+                if (!user || !user.userName) return "G"; // Default letter or use "Guest"
+                const userName = user.userName.toString().trim();
+                return userName.length > 0 ? userName[0].toUpperCase() : "G";
+              })()}
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
@@ -153,16 +155,37 @@ const ShoppingHeader = () => {
         </Link>
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="lg:hidden">
+            <Button
+              variant="outline"
+              size="icon"
+              className="lg:hidden rounded-full p-2 hover:bg-accent"
+            >
               <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle header menu </span>
+              <span className="sr-only">Toggle header menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-full max-w-xs">
+
+          {/* Mobile Menu */}
+          <SheetContent
+            side="left"
+            className="w-full max-w-xs sm:max-w-sm p-6 space-y-6 bg-background"
+          >
+            {/* Brand */}
+            <Link to="/shop/home" className="flex items-center gap-2">
+              <HousePlus className="h-6 w-6 text-primary" />
+              <span className="text-lg font-bold">Ecommerce</span>
+            </Link>
+
+            {/* Navigation Items */}
             <MenuItems />
-            <HeaderRightContent />
+
+            {/* User + Cart */}
+            <div className="pt-6 border-t space-y-4">
+              <HeaderRightContent />
+            </div>
           </SheetContent>
         </Sheet>
+
         <div className="hidden lg:block">
           <MenuItems />
         </div>
