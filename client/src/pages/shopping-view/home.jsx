@@ -58,7 +58,7 @@ const ShoppingHome = () => {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -100,7 +100,9 @@ const ShoppingHome = () => {
   useEffect(() => {
     if (featureImageList && featureImageList.length > 0) {
       const timer = setInterval(() => {
-        setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
+        setCurrentSlide(
+          (prevSlide) => (prevSlide + 1) % featureImageList.length
+        );
       }, 3000);
       return () => clearInterval(timer);
     }
@@ -136,7 +138,7 @@ const ShoppingHome = () => {
               />
             ))
           : null}
-        
+
         {featureImageList && featureImageList.length > 1 && (
           <>
             <Button
@@ -232,7 +234,7 @@ const ShoppingHome = () => {
           </div>
         </div>
       </section>
-      
+
       <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}

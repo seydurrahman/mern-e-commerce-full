@@ -47,7 +47,8 @@ function ProductImageUpload({
       data.append("my_file", imageFile);
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/admin/products/upload-image`,
-        data
+        data,
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       console.log("Cloudinary response", response.data);
@@ -66,9 +67,8 @@ function ProductImageUpload({
     if (imageFile !== null) uploadImageToCloudinary();
   }, [imageFile]);
 
-
   return (
-    <div className={`w-full mt-4 ${isCustomStyle ?"":"max-w-md mx-auto"}`}>
+    <div className={`w-full mt-4 ${isCustomStyle ? "" : "max-w-md mx-auto"}`}>
       <Label className="text-lg font-semibold mb-2 block">Image Upload</Label>
       <div
         onDragOver={handleDragOver}
