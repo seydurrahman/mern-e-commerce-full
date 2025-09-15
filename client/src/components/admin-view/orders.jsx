@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "../ui/table";
 import { Button } from "../ui/button";
-import { Dialog } from "../ui/dialog";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 import AdminOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,25 +20,26 @@ import {
 import { Badge } from "../ui/badge";
 
 const AdminOrdersView = () => {
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
   const dispatch = useDispatch();
 
-  function handleFetchOrderDetails(getId) {
-    setSelectedOrderId(getId);
-    dispatch(getOrderDetailsForAdmin(getId));
-  }
+  const handleFetchOrderDetails = (orderId) => {
+    setSelectedOrderId(orderId);
+    dispatch(getOrderDetailsForAdmin(orderId));
+  };
 
   useEffect(() => {
     dispatch(getAllOrdersForAdmin());
   }, [dispatch]);
 
-  console.log(orderDetails, "orderDetails");
-
+  // Open dialog when orderDetails are loaded
   useEffect(() => {
-    if (orderDetails !== null) setOpenDetailsDialog(true);
-  }, [orderDetails]);
+    if (orderDetails && orderDetails._id === selectedOrderId) {
+      setOpenDetailsDialog(true);
+    }
+  }, [orderDetails, selectedOrderId]);
 
   return (
     <Card>
@@ -59,53 +60,43 @@ const AdminOrdersView = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orderList && orderList.length > 0
-              ? orderList.map((orderItem) => (
-                  <TableRow key={orderItem?._id}>
-                    <TableCell>{orderItem?._id}</TableCell>
-                    <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={`py-1 px-3 ${
-                          orderItem?.orderStatus === "confirmed"
-                            ? "bg-green-500"
-                            : orderItem?.orderStatus === "rejected"
-                            ? "bg-red-600"
-                            : "bg-black"
-                        }`}
-                      >
-                        {orderItem?.orderStatus}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>${orderItem?.totalAmount}</TableCell>
-                    <TableCell>
-                      <Dialog
-                        open={openDetailsDialog}
-                        onOpenChange={(open) => {
-                          if (!open) {
-                            setOpenDetailsDialog(false);
-                            dispatch(resetOrderDetails());
-                          } else {
-                            setOpenDetailsDialog(true);
-                          }
+            {orderList?.map((order) => (
+              <TableRow key={order._id}>
+                <TableCell>{order._id}</TableCell>
+                <TableCell>{order.orderDate.split("T")[0]}</TableCell>
+                <TableCell>
+                  <Badge
+                    className={`py-1 px-3 ${
+                      order.orderStatus === "confirmed"
+                        ? "bg-green-500"
+                        : order.orderStatus === "rejected"
+                        ? "bg-red-600"
+                        : "bg-black"
+                    }`}
+                  >
+                    {order.orderStatus}
+                  </Badge>
+                </TableCell>
+                <TableCell>${order.totalAmount}</TableCell>
+                <TableCell>
+                  <Dialog open={openDetailsDialog} onOpenChange={setOpenDetailsDialog}>
+                    {orderDetails && (
+                      <AdminOrderDetailsView
+                        orderDetails={orderDetails}
+                        addressInfo={orderDetails.addressInfo || {}}
+                        onClose={() => {
+                          setOpenDetailsDialog(false);
+                          dispatch(resetOrderDetails());
                         }}
-                      >
-                        {orderDetails && (
-                          <AdminOrderDetailsView
-                            orderDetails={orderDetails}
-                            addressInfo={orderDetails.shippingAddress || {}} // Add this line
-                          />
-                        )}
-                      </Dialog>
-                      <Button
-                        onClick={() => handleFetchOrderDetails(orderItem?._id)}
-                      >
-                        View Details
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              : null}
+                      />
+                    )}
+                  </Dialog>
+                  <Button onClick={() => handleFetchOrderDetails(order._id)}>
+                    View Details
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </CardContent>
