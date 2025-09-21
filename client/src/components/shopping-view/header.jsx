@@ -30,7 +30,7 @@ import UserCartWrapper from "./cart-wrapper";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
 
-function MenuItems() {
+function MenuItems({ closeMenu }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,17 +41,19 @@ function MenuItems() {
       getCurrentMenuItem.id !== "home" &&
       getCurrentMenuItem.id !== "products" &&
       getCurrentMenuItem.id !== "search"
-        ? {
-            category: [getCurrentMenuItem.id],
-          }
+        ? { category: [getCurrentMenuItem.id] }
         : null;
+
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
 
-    location.pathname.includes("listing") && currentFilter !== null
-      ? setSearchParams(
-          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
-        )
-      : navigate(getCurrentMenuItem.path);
+    if (location.pathname.includes("listing") && currentFilter !== null) {
+      setSearchParams(new URLSearchParams(`?category=${getCurrentMenuItem.id}`));
+    } else {
+      navigate(getCurrentMenuItem.path);
+    }
+
+    // ✅ Close drawer after navigation
+    if (closeMenu) closeMenu();
   }
 
   return (
@@ -68,6 +70,7 @@ function MenuItems() {
     </nav>
   );
 }
+
 
 function HeaderRightContent() {
   const { user } = useSelector((state) => state.auth);
@@ -146,6 +149,8 @@ function HeaderRightContent() {
 const ShoppingHeader = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
+  const [openCartSheet, setOpenCartSheet] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
@@ -153,7 +158,7 @@ const ShoppingHeader = () => {
           <HousePlus className="h-6 w-6" />
           <span className="font-bold">Ecommerce</span>
         </Link>
-        <Sheet>
+        <Sheet open={openCartSheet} onOpenChange={setOpenCartSheet}>
           <SheetTrigger asChild>
             <Button
               variant="outline"
@@ -168,7 +173,7 @@ const ShoppingHeader = () => {
           {/* Mobile Menu */}
           <SheetContent
             side="left"
-            className="w-full max-w-xs sm:max-w-sm p-6 space-y-6 bg-background"
+            className="w-full max-w-xs sm:max-w-sm p-6 space-y-6 bg-background h-full overflow-y-auto"
           >
             {/* Brand */}
             <Link to="/shop/home" className="flex items-center gap-2">
@@ -177,7 +182,7 @@ const ShoppingHeader = () => {
             </Link>
 
             {/* Navigation Items */}
-            <MenuItems />
+            <MenuItems closeMenu={()=>setOpenCartSheet(false)} />
 
             {/* User + Cart */}
             <div className="pt-6 border-t space-y-4">
